@@ -16,6 +16,7 @@
     <div class="mt-3">Selected file: {{ file ? file.name : '' }}</div>
 
     <b-button v-on:click="convertCSV">CSV->JSON</b-button>
+    ITEMS JSON: {{ items }}
   </div>
 </template>
 
