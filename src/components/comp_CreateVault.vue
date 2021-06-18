@@ -1,28 +1,51 @@
 <template>
-  <div class="comp_Vault">
-    <h1>{{ vault_name }}</h1>
-    <b-table striped bordered :items="items" :fields="fields">
-        <template #cell(name)="data">
-            <b class="text-info">{{ data.value.toUpperCase() }}</b>
-            <!-- <b-button v-on:click="genGunPerkTable(data.item)">TEST</b-button> -->
-            <DynamicImage :hash="data.item['Hash'].toString()"></DynamicImage>
-        </template>
-        <template #cell(Slots)="data">
-            <div v-html="genGunPerkTable(data.item)"></div>
-        </template>
-    </b-table>
+    <div>
+        <div>Create Vault Page</div>
+        <b-button size="sm" @click="showUpload = !showUpload">
+            {{ showUpload ? 'Hide' : 'Show' }} Fixed bottom Alert
+        </b-button>
+        <b-alert
+            v-model="showUpload"
+            class="position-fixed fixed-bottom m-0 rounded-0"
+            style="z-index: 2000;"
+            variant="primary"
+        >
+            File has been imported. Upload now?
+            <b-button variant="success"> Upload </b-button>
+        </b-alert>
+        <h1>{{ vault_name }}</h1>
+        <b-table 
+            striped 
+            bordered 
+            :items="items" 
+            :fields="fields"
+            :tbody-tr-class="rowClass"
+        >
+            <template #cell(name)="data">
+                <b class="text-info">{{ data.value.toUpperCase() }}</b>
+                <!-- <b-button v-on:click="genGunPerkTable(data.item)">TEST</b-button> -->
+                <!-- <DynamicImage :hash="data.item['Hash'].toString()"></DynamicImage> -->
+            </template>
+            <template #cell(Slots)="data">
+                <div v-html="genGunPerkTable(data.item)"></div>
+            </template>
+        </b-table>
 
-    <b-form-file v-model="file" class="mt-3" plain></b-form-file>
-    <div class="mt-3">Selected file: {{ file ? file.name : '' }}</div>
+        <b-form-file v-model="file" class="mt-3" plain></b-form-file>
+        <div class="mt-3">Selected file: {{ file ? file.name : '' }}</div>
 
-    <b-button v-on:click="convertCSV">CSV->JSON</b-button>
-    ITEMS JSON: {{ items }}
-  </div>
+        <div>
+            <b-button v-on:click="convertCSV">CSV->JSON</b-button>
+        </div>
+        <div>ITEMS JSON: {{ items }}</div>
+
+    
+    </div>
 </template>
 
 <script>
 
-import DynamicImage from '@/components/DynamicImage.vue'
+// import DynamicImage from '@/components/DynamicImage.vue'
 import PerksJSON from '@/assets/Perks.json'
 
 var Papa = require('papaparse');
@@ -35,10 +58,11 @@ export default {
     vault_name: String
   },
   components: {
-      DynamicImage
+    //   DynamicImage
   },
   data() {
       return {
+          showUpload: false,
             file: null,
             csv: null,
             perks: PerksJSON.results,
@@ -61,6 +85,11 @@ export default {
       }
   },
   methods: {
+      rowClass(item, type) {
+        if (!item || type !== 'row') return
+        if (item.Vote === 'Junk') return 'table-danger'
+        else if (item.Vote === 'Keep') return 'table-success'
+      },
       convertCSV() {
           console.log("Parsing...");
           var _this = this;
@@ -69,7 +98,8 @@ export default {
                 header: true,
                 dynamicTyping: true,
                 complete: function(results) {
-                    console.log(results);
+                    results.data.forEach(item => {item["Vote"] = "none"})
+                    console.log("Data:", results.data);
                     _this.items = results.data;
                 }
             });
@@ -87,13 +117,13 @@ export default {
           perks.push(item["Perks 3"]);
           perks.push(item["Perks 4"]);
           perks.push(item["Perks 5"]);
-        //   perks.push(item["Perks 6"]);
-        //   perks.push(item["Perks 7"]);
-        //   perks.push(item["Perks 8"]);
-        //   perks.push(item["Perks 9"]);
-        //   perks.push(item["Perks 10"]);
-        //   perks.push(item["Perks 11"]);
-        //   perks.push(item["Perks 12"]);
+          perks.push(item["Perks 6"]);
+          perks.push(item["Perks 7"]);
+          perks.push(item["Perks 8"]);
+          perks.push(item["Perks 9"]);
+          perks.push(item["Perks 10"]);
+          perks.push(item["Perks 11"]);
+          perks.push(item["Perks 12"]);
           var perk_obj1 = this.perks[item["Perks 0"].replace("*", '')];
           var desc = perk_obj1.printouts.Description[0];
           var table = "<table class='slots-table'><tr><td class='selected-perk' v-b-tooltip.hover title='" + desc + "'>" + item["Perks 0"] + "</td>"
@@ -143,6 +173,12 @@ export default {
   },
   computed: {
       
+  },
+  watch: {
+      items: function (val) {
+          console.log("Create WATCH");
+          this.showUpload = true;
+      }
   }
 }
 </script>

@@ -19,8 +19,13 @@ const routes = [
     component: () => import(/* webpackChunkName: "about" */ '../views/About.vue')
   },
   {
-    path: '/vault',
+    path: '/vault/:id',
     name: 'Vault',
+    component: () => import('../views/Vault_Vote.vue')
+  },
+  {
+    path: '/vault',
+    name: 'Create',
     component: () => import('../views/Vault.vue')
   }
 ]

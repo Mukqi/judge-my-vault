@@ -1,17 +1,17 @@
 <template>
   <div class="vault">
-    <createVault vault_name="Vault name here"/>
+    <voteVault vault_name="Vault name here"/>
   </div>
 </template>
 
 <script>
 // @ is an alias to /src
-import createVault from '@/components/comp_CreateVault.vue'
+import voteVault from '@/components/comp_VoteVault.vue'
 
 export default {
   name: 'Home',
   components: {
-    createVault
+    voteVault
   }
 }
 </script>
