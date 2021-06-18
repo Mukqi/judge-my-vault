@@ -3,7 +3,8 @@
     <div id="nav">
       <router-link to="/">Home</router-link> |
       <router-link to="/about">About</router-link> |
-      <router-link to="/vault">Vault</router-link>
+      <router-link to="/vault">Vault</router-link> | 
+      <router-link to="/vault/1234">Vote</router-link>
       <router-view/>
     </div>
     
@@ -17,7 +18,6 @@ export default {
   data() {
     return {
       user: { },
-      
     }
   },
 }
