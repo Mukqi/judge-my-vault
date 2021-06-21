@@ -10,13 +10,13 @@
     "env": {
       "Type": "String"
     },
-    "storagejmvDynamoDBName": {
+    "storagevaultsDBName": {
       "Type": "String",
-      "Default": "storagejmvDynamoDBName"
+      "Default": "storagevaultsDBName"
     },
-    "storagejmvDynamoDBArn": {
+    "storagevaultsDBArn": {
       "Type": "String",
-      "Default": "storagejmvDynamoDBArn"
+      "Default": "storagevaultsDBArn"
     }
   },
   "Conditions": {
@@ -41,12 +41,12 @@
         "FunctionName": {
           "Fn::If": [
             "ShouldNotCreateEnvResources",
-            "jmvLambda",
+            "jmvLambda2",
             {
               "Fn::Join": [
                 "",
                 [
-                  "jmvLambda",
+                  "jmvLambda2",
                   "-",
                   {
                     "Ref": "env"
@@ -63,12 +63,6 @@
             },
             "REGION": {
               "Ref": "AWS::Region"
-            },
-            "STORAGE_JMVDYNAMODB_NAME": {
-              "Ref": "storagejmvDynamoDBName"
-            },
-            "STORAGE_JMVDYNAMODB_ARN": {
-              "Ref": "storagejmvDynamoDBArn"
             }
           }
         },
@@ -83,7 +77,7 @@
         "Timeout": "25",
         "Code": {
           "S3Bucket": "amplify-judgemyvault-dev-191644-deployment",
-          "S3Key": "amplify-builds/jmvLambda-415149342f7970537358-build.zip"
+          "S3Key": "amplify-builds/jmvLambda2-724b5278713950543442-build.zip"
         }
       }
     },
@@ -93,12 +87,12 @@
         "RoleName": {
           "Fn::If": [
             "ShouldNotCreateEnvResources",
-            "judgemyvaultLambdaRoleca227b16",
+            "judgemyvaultLambdaRole21245172",
             {
               "Fn::Join": [
                 "",
                 [
-                  "judgemyvaultLambdaRoleca227b16",
+                  "judgemyvaultLambdaRole21245172",
                   "-",
                   {
                     "Ref": "env"
@@ -178,66 +172,14 @@
               ],
               "Resource": [
                 {
-                  "Ref": "storagejmvDynamoDBArn"
+                  "Ref": "storagevaultsDBArn"
                 },
                 {
                   "Fn::Join": [
                     "/",
                     [
                       {
-                        "Ref": "storagejmvDynamoDBArn"
-                      },
-                      "index/*"
-                    ]
-                  ]
-                }
-              ]
-            }
-          ]
-        }
-      }
-    },
-    "AmplifyResourcesPolicy": {
-      "DependsOn": [
-        "LambdaExecutionRole"
-      ],
-      "Type": "AWS::IAM::Policy",
-      "Properties": {
-        "PolicyName": "amplify-lambda-execution-policy",
-        "Roles": [
-          {
-            "Ref": "LambdaExecutionRole"
-          }
-        ],
-        "PolicyDocument": {
-          "Version": "2012-10-17",
-          "Statement": [
-            {
-              "Effect": "Allow",
-              "Action": [
-                "dynamodb:Put*",
-                "dynamodb:Create*",
-                "dynamodb:BatchWriteItem",
-                "dynamodb:Get*",
-                "dynamodb:BatchGetItem",
-                "dynamodb:List*",
-                "dynamodb:Describe*",
-                "dynamodb:Scan",
-                "dynamodb:Query",
-                "dynamodb:Update*",
-                "dynamodb:RestoreTable*",
-                "dynamodb:Delete*"
-              ],
-              "Resource": [
-                {
-                  "Ref": "storagejmvDynamoDBArn"
-                },
-                {
-                  "Fn::Join": [
-                    "/",
-                    [
-                      {
-                        "Ref": "storagejmvDynamoDBArn"
+                        "Ref": "storagevaultsDBArn"
                       },
                       "index/*"
                     ]

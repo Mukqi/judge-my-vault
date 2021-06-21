@@ -1,19 +1,19 @@
 {
   "storage": {
-    "jmvDynamoDB": {
+    "vaultsDB": {
       "service": "DynamoDB",
       "providerPlugin": "awscloudformation"
     }
   },
   "function": {
-    "jmvLambda": {
+    "jmvLambda2": {
       "build": true,
       "providerPlugin": "awscloudformation",
       "service": "Lambda",
       "dependsOn": [
         {
           "category": "storage",
-          "resourceName": "jmvDynamoDB",
+          "resourceName": "vaultsDB",
           "attributes": [
             "Name",
             "Arn"
@@ -22,14 +22,6 @@
             "Name": "TABLE_NAME",
             "Arn": "TABLE_ARN"
           }
-        },
-        {
-          "category": "storage",
-          "resourceName": "jmvDynamoDB",
-          "attributes": [
-            "Name",
-            "Arn"
-          ]
         }
       ]
     }
@@ -42,13 +34,13 @@
     }
   },
   "api": {
-    "jmvApi": {
+    "jmvApi2": {
       "service": "API Gateway",
       "providerPlugin": "awscloudformation",
       "dependsOn": [
         {
           "category": "function",
-          "resourceName": "jmvLambda",
+          "resourceName": "jmvLambda2",
           "attributes": [
             "Name",
             "Arn"

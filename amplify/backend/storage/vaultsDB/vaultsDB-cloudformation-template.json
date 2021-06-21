@@ -12,13 +12,6 @@
             "Type": "String"
         },
         
-        "sortKeyName": {
-            "Type": "String"
-        },
-        "sortKeyType": {
-            "Type": "String"
-        },
-        
         "tableName": {
             "Type": "String"
         }
@@ -40,6 +33,11 @@
                 "AttributeDefinitions": [
                   
                   {
+                      "AttributeName": "Id",
+                      "AttributeType": "S"
+                  }  , 
+                  
+                  {
                       "AttributeName": "owner",
                       "AttributeType": "S"
                   }  , 
@@ -53,13 +51,8 @@
                 "KeySchema": [
                   
                   {
-                    "AttributeName": "owner",
+                    "AttributeName": "Id",
                     "KeyType": "HASH"
-                  }  , 
-                  
-                  {
-                    "AttributeName": "title",
-                    "KeyType": "RANGE"
                   } 
                   
                 ],
@@ -94,6 +87,34 @@
                     ]
                 }
                 
+                ,"GlobalSecondaryIndexes": [
+                  
+                    {
+                        "IndexName": "owner",
+                        "KeySchema": [
+                            
+                            {
+                                "AttributeName": "owner",
+                                "KeyType": "HASH"
+                            }  , 
+                            
+                            {
+                                "AttributeName": "title",
+                                "KeyType": "RANGE"
+                            } 
+                            
+                        ],
+                        "Projection": {
+                            "ProjectionType": "ALL"
+                        },
+                        "ProvisionedThroughput": {
+                            "ReadCapacityUnits": "5",
+                            "WriteCapacityUnits": "5"
+                        }
+                    } 
+                  
+                ]
+                
             }
         }
     },
@@ -127,17 +148,6 @@
         "PartitionKeyType": {
             "Value": {
                 "Ref": "partitionKeyType"
-            }
-        },
-        
-        "SortKeyName": {
-            "Value": {
-                "Ref": "sortKeyName"
-            }
-        },
-        "SortKeyType": {
-            "Value": {
-                "Ref": "sortKeyType"
             }
         },
         
