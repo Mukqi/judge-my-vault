@@ -21,7 +21,7 @@ const routes = [
   {
     path: '/vault/:id',
     name: 'Vault',
-    component: () => import('../views/Vault_Vote.vue')
+    component: () => import('../views/Vault_Vote.vue'),
   },
   {
     path: '/vault',
@@ -33,7 +33,10 @@ const routes = [
 const router = new VueRouter({
   mode: 'history',
   base: process.env.BASE_URL,
-  routes
+  routes,
+  props: {
+    user: { "name": "June" },
+  }
 })
 
 export default router

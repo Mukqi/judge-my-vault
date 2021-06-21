@@ -1,6 +1,7 @@
 <template>
   <div class="comp_Vault">
       <div>Vote Vault Page</div>
+      <!-- {{ user.name }} -->
     <h1>{{ vault_name }}</h1>
     <div> Something here: {{ $route.params.id }} </div>
     <b-alert
@@ -200,9 +201,6 @@ export default {
             // complete the table
             table += "</tr></table>";
             return table;
-        },
-        testfunction() {
-                return "https://upload.wikimedia.org/wikipedia/commons/0/05/Lengthy_body_Kanni.jpg"
         }
   },
   computed: {
