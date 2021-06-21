@@ -1,0 +1,21 @@
+{
+    "Id": "12356788543",
+    "owner": "Carson",
+    "title": "A title",
+    "description": "A description",
+    "items": [
+        {
+            "Id": "7854909859804098",
+            "Power": "1310",
+            "Name": "Botheration MK.28",
+            "Type": "Shotgun",
+            ...
+            "KeepVotes": [
+                "Carson", "Daniel", "Everett"
+            ],
+            "JunkVotes": [
+                "Shaffer"
+            ]
+        }
+    ]
+}

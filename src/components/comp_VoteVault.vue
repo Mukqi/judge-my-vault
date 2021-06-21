@@ -11,7 +11,7 @@
         variant="primary"
     >
         Vault has been changed. Save changes?
-        <b-button @click="saveChanges" variant="success"> Save </b-button>
+        <b-button @click="uploadTable" variant="success"> Save </b-button>
     </b-alert>
     <b-table 
         striped 
@@ -77,7 +77,8 @@
 
 // import DynamicImage from '@/components/DynamicImage.vue'
 import PerksJSON from '@/assets/Perks.json'
-import tableJSON from '@/test_resources/smol.json'
+import tableJSON from '@/test_resources/smolv2.json'
+// import { table } from 'console';
 
 var Papa = require('papaparse');
 var fs = require('fs');
@@ -92,13 +93,21 @@ export default {
     //   DynamicImage
   },
   created() {
-      tableJSON.forEach(item => {item["Vote"] = "none"});
-      this.items = JSON.parse(JSON.stringify(tableJSON));
+        // take the imported file and extract the things from it
+        this.owner = tableJSON["owner"]
+        this.title = tableJSON["title"]
+        this.description = tableJSON["description"]
+        this.items = tableJSON["items"]
+        this.vaultId = tableJSON["Id"]
   },
   data() {
       return {
             showUpload: false,
             perks: PerksJSON.results,
+            title: "",
+            description: "",
+            owner: "",
+            vaultId: "",
             fields: [
                 "Power",
                 {
@@ -113,10 +122,36 @@ export default {
                 "Power Limit",
                 "Vote"
             ],
-            items: tableJSON
+            items: []
       }
   },
   methods: {
+      uploadTable() {
+          console.log("Clicked upload")
+          if (this.title.length > 0 && this.items.length > 0 && this.$store.state.user) {
+                let obj = {
+                    "owner": this.$store.state.user.username,
+                    "title": this.title,
+                    "description": this.description,
+                };
+                // Get the items that have either "trash or keep" Vote 
+                let ls = this.items.filter(item => {
+                    item["Vote"]=="Keep" || item["Vote"]=="Junk"
+                    })
+                let newls = [];
+                ls.forEach(x => {
+                    let o = {
+                        "id": x["Id"].replace(/"/g, ''),
+                        "Vote": x["Vote"]
+                    }
+                    newls.push(o);
+                });
+                obj["items"]=newls;
+                console.log(obj);
+          } else {
+              console.log("Nope")
+          }
+      },
       voteKeep(item) {
           if (item.Vote != 'Keep'){
             item.Vote = 'Keep';

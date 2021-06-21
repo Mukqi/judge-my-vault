@@ -1,13 +1,13 @@
 <template>
   <div id="app">
     <div v-if="authState !== 'signedin'">You are signed out.</div>
-      <amplify-authenticator username-alias="email">
+      <amplify-authenticator username-alias="username">
       <amplify-sign-up
         slot="sign-up"
-        username-alias="email"
+        username-alias="username"
         :form-fields.prop="formFields"
       ></amplify-sign-up>
-      <amplify-sign-in slot="sign-in" username-alias="email"></amplify-sign-in>
+      <amplify-sign-in slot="sign-in" username-alias="username"></amplify-sign-in>
       <div v-if="user">
         <div>Hello, {{user.username}}</div>
 
@@ -36,6 +36,7 @@ export default {
     this.unsubscribeAuth = onAuthUIStateChange((authState, authData) => {
       this.authState = authState;
       this.user = authData;
+      this.$store.commit('setUser', authData)
     })
   },
   data() {
@@ -45,15 +46,21 @@ export default {
       unsubscribeAuth: undefined,
       formFields: [
         {
+          type: 'username',
+          label: 'Username',
+          placeholder: 'Username',
+          inputProps: { required: true, autocomplete: 'username' }
+        },
+        {
           type: 'email',
           label: 'Email',
           placeholder: 'you@provider.com',
-          inputProps: { required: true, autocomplete: 'username' },
+          inputProps: { required: true, autocomplete: 'email' },
         },
         {
           type: 'password',
           label: 'Password',
-          placeholder: 'Custom password placeholder',
+          placeholder: 'Password',
           inputProps: { required: true, autocomplete: 'Aa1!Bb2@' },
         }
       ]

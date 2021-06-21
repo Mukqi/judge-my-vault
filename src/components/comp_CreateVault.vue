@@ -1,9 +1,15 @@
 <template>
     <div>
         <div>Create Vault Page</div>
+        <div>
+            <!-- User: {{ user }} -->
+        </div>
+        <b-button @click="increment">Increment</b-button>
         <b-button size="sm" @click="showUpload = !showUpload">
             {{ showUpload ? 'Hide' : 'Show' }} Fixed bottom Alert
         </b-button>
+        <b-button @click="callGet()">Get test</b-button>
+        <div> {{ count }} </div>
         <b-alert
             v-model="showUpload"
             class="position-fixed fixed-bottom m-0 rounded-0"
@@ -11,9 +17,10 @@
             variant="primary"
         >
             File has been imported. Upload now?
-            <b-button variant="success"> Upload </b-button>
+            <b-button variant="success" @click="uploadTable" :disabled="!canUpload"> Upload </b-button>
         </b-alert>
-        <h1>{{ vault_name }}</h1>
+        Title: <b-form-input v-model="title" :state="title.length>0"></b-form-input>
+        Description <b-input v-model="description"></b-input>
         <b-table 
             striped 
             bordered 
@@ -31,13 +38,13 @@
             </template>
         </b-table>
 
-        <b-form-file v-model="file" class="mt-3" plain></b-form-file>
+        <b-form-file v-model="file" class="mt-3" :state="items.length>0"></b-form-file>
         <div class="mt-3">Selected file: {{ file ? file.name : '' }}</div>
 
         <div>
             <b-button v-on:click="convertCSV">CSV->JSON</b-button>
         </div>
-        <div>ITEMS JSON: {{ items }}</div>
+        <!-- <div>ITEMS JSON: {{ items }}</div> -->
 
     
     </div>
@@ -47,6 +54,7 @@
 
 // import DynamicImage from '@/components/DynamicImage.vue'
 import PerksJSON from '@/assets/Perks.json'
+import { API } from 'aws-amplify';
 
 var Papa = require('papaparse');
 var fs = require('fs');
@@ -55,7 +63,6 @@ var axios = require('axios');
 export default {
   name: 'comp_CreateVault',
   props: {
-    vault_name: String
   },
   components: {
     //   DynamicImage
@@ -66,6 +73,8 @@ export default {
             file: null,
             csv: null,
             perks: PerksJSON.results,
+            title: "",
+            description: "",
             fields: [
                 "Power",
                 {
@@ -85,6 +94,17 @@ export default {
       }
   },
   methods: {
+        callGet() {
+            API.get('jmvApi2', '/vaults', {}).then(result => {
+                this.todos = JSON.parse(result.body);
+                }).catch(err => {
+                console.log(err);
+            })
+        },
+    increment() {
+        this.$store.commit('increment')
+        console.log(this.$store.state.count)
+    },
       rowClass(item, type) {
         if (!item || type !== 'row') return
         if (item.Vote === 'Junk') return 'table-danger'
@@ -99,7 +119,7 @@ export default {
                 dynamicTyping: true,
                 complete: function(results) {
                     results.data.forEach(item => {item["Vote"] = "none"})
-                    console.log("Data:", results.data);
+                    // console.log("Data:", results.data);
                     _this.items = results.data;
                 }
             });
@@ -129,10 +149,10 @@ export default {
           var table = "<table class='slots-table'><tr><td class='selected-perk' v-b-tooltip.hover title='" + desc + "'>" + item["Perks 0"] + "</td>"
           var perk1 = this.perks[item["Perks 0"].replace("*", '')];
           var prevType = perk1.printouts.Type[0]['fulltext'];
-          console.log("Perks", perks);
+        //   console.log("Perks", perks);
           perks.forEach(perk => {
               if (perk != null) {
-                console.log("Perk: ", perk);
+                // console.log("Perk: ", perk);
                 // Find the perk in the list and get the type from it
                 var perk_obj = this.perks[perk.replace("*", '')];
                 if (perk_obj != undefined){
@@ -151,7 +171,7 @@ export default {
                     else {
                         prevType = type;
                         if (perk.charAt(perk.length-1) =='*'){
-                            console.log("STAR!");
+                            // console.log("STAR!");
                             table = table + "</tr><tr><td class='selected-perk' v-b-tooltip.hover title='" + description + "'>"+perk+"</td>";
                         }else
                             table = table + "</tr><tr><td v-b-tooltip.hover title='" + description + "'>"+perk+"</td>";
@@ -169,14 +189,46 @@ export default {
       },
       testfunction() {
             return "https://upload.wikimedia.org/wikipedia/commons/0/05/Lengthy_body_Kanni.jpg"
+      },
+      uploadTable() {
+          console.log("Clicked upload")
+          if (this.title.length > 0 && this.items.length > 0 && this.$store.state.user) {
+                let obj = {
+                    "owner": this.$store.state.user.username,
+                    "title": this.title,
+                    "description": this.description,
+                };
+                // Get the items that have either "trash or keep" Vote 
+                // let ls = this.items.filter(item => {
+                //     item["Vote"]=="Keep" || item["Vote"]=="Junk"
+                //     })
+                let newls = [];
+                this.items.forEach(x => {
+                    let o = {
+                        "id": x["Id"].replace(/"/g, ''),
+                        "KeepVotes": [],
+                        "JunkVotes": []
+                    }
+                    newls.push(o);
+                });
+                obj["items"]=newls;
+                console.log(obj);
+          } else {
+              console.log("Nope")
+          }
       }
   },
   computed: {
-      
+    count () {
+      return this.$store.state.count
+    },
+    canUpload() {
+        return this.title.length > 0 && this.items.length > 0;
+    }
   },
   watch: {
       items: function (val) {
-          console.log("Create WATCH");
+        //   console.log("Create WATCH");
           this.showUpload = true;
       }
   }

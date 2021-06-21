@@ -30,12 +30,15 @@ const routes = [
   }
 ]
 
+// let user = await Auth.currentAuthenticatedUser();
+
+// const { attributes } = user;
+
 const router = new VueRouter({
   mode: 'history',
   base: process.env.BASE_URL,
   routes,
   props: {
-    user: { "name": "June" },
   }
 })
 
