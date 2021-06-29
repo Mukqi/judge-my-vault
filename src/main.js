@@ -12,6 +12,7 @@ import "@aws-amplify/ui-vue";
 import Amplify from "aws-amplify"
 import awsconfig from "./aws-exports"
 
+const { v4: uuidv4 } = require('uuid')
 Amplify.configure(awsconfig);
 
 import { BootstrapVue, IconsPlugin } from 'bootstrap-vue'

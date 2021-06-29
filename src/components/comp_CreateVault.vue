@@ -59,6 +59,7 @@ import { API } from 'aws-amplify';
 var Papa = require('papaparse');
 var fs = require('fs');
 var axios = require('axios');
+import { v4 as uuidv4 } from 'uuid';
 
 export default {
   name: 'comp_CreateVault',
@@ -94,13 +95,18 @@ export default {
       }
   },
   methods: {
-        callGet() {
-            API.get('jmvApi2', '/vaults', {}).then(result => {
-                this.todos = JSON.parse(result.body);
-                }).catch(err => {
-                console.log(err);
-            })
-        },
+    callGet() {
+        API.get('jmvApi2', '/vaults/34a123', {}).then(result => {
+            console.log(JSON.parse(JSON.stringify(result[0])));
+            var item = JSON.parse(JSON.stringify(result[0]));
+            this.title = item["title"]
+            // this.description = item["description"]
+            
+            // this.items = JSON.stringify(result[0]).;
+            }).catch(err => {
+            console.log(err);
+        })
+    },
     increment() {
         this.$store.commit('increment')
         console.log(this.$store.state.count)
@@ -191,28 +197,31 @@ export default {
             return "https://upload.wikimedia.org/wikipedia/commons/0/05/Lengthy_body_Kanni.jpg"
       },
       uploadTable() {
-          console.log("Clicked upload")
-          if (this.title.length > 0 && this.items.length > 0 && this.$store.state.user) {
-                let obj = {
-                    "owner": this.$store.state.user.username,
-                    "title": this.title,
-                    "description": this.description,
-                };
-                // Get the items that have either "trash or keep" Vote 
-                // let ls = this.items.filter(item => {
-                //     item["Vote"]=="Keep" || item["Vote"]=="Junk"
-                //     })
-                let newls = [];
-                this.items.forEach(x => {
-                    let o = {
-                        "id": x["Id"].replace(/"/g, ''),
-                        "KeepVotes": [],
-                        "JunkVotes": []
-                    }
-                    newls.push(o);
-                });
-                obj["items"]=newls;
-                console.log(obj);
+        console.log("Clicked upload")
+        if (this.title.length > 0 && this.items.length > 0 && this.$store.state.user) {
+            let obj = {
+                "owner": this.$store.state.user.username,
+                "title": this.title,
+                "description": this.description,
+            };
+            // Get the items that have either "trash or keep" Vote 
+            // let ls = this.items.filter(item => {
+            //     item["Vote"]=="Keep" || item["Vote"]=="Junk"
+            //     })
+            let id = btoa(uuidv4());
+            obj["Id"] = id;
+            let newls = [];
+            this.items.forEach(x => {
+                let o = {
+                    "id": x["Id"].replace(/"/g, ''),
+                    "KeepVotes": [],
+                    "JunkVotes": []
+                }
+                newls.push(o);
+            });
+            console.log(newls);
+            obj["items"]=newls;
+            console.log(obj);
           } else {
               console.log("Nope")
           }

@@ -80,6 +80,9 @@ import PerksJSON from '@/assets/Perks.json'
 import tableJSON from '@/test_resources/smolv2.json'
 // import { table } from 'console';
 
+const { v4: uuidv4 } = require('uuid')
+import { API } from 'aws-amplify';
+
 var Papa = require('papaparse');
 var fs = require('fs');
 var axios = require('axios');
@@ -126,6 +129,18 @@ export default {
       }
   },
   methods: {
+    callGet() {
+        API.get('jmvApi2', '/vaults/34a123', {}).then(result => {
+            console.log(JSON.parse(JSON.stringify(result[0])));
+            var item = JSON.parse(JSON.stringify(result[0]));
+            this.title = item["title"]
+            // this.description = item["description"]
+            
+            // this.items = JSON.stringify(result[0]).;
+            }).catch(err => {
+            console.log(err);
+        })
+    },
       uploadTable() {
           console.log("Clicked upload")
           if (this.title.length > 0 && this.items.length > 0 && this.$store.state.user) {
@@ -133,20 +148,22 @@ export default {
                     "owner": this.$store.state.user.username,
                     "title": this.title,
                     "description": this.description,
+                    "items": []
                 };
-                // Get the items that have either "trash or keep" Vote 
-                let ls = this.items.filter(item => {
-                    item["Vote"]=="Keep" || item["Vote"]=="Junk"
-                    })
-                let newls = [];
-                ls.forEach(x => {
-                    let o = {
-                        "id": x["Id"].replace(/"/g, ''),
-                        "Vote": x["Vote"]
+                let name = this.$store.state.user.username
+                // console.log(this.items);
+                this.items.forEach(x=>console.log(x["KeepVotes"].includes(name)))
+                // Get the items that have either "trash or keep" Vote \\
+                let newlist = [];
+                this.items.forEach(item =>{
+                    if (item["KeepVotes"].includes(name) || 
+                    item["JunkVotes"].includes(name)) {
+                        newlist.push(item);
                     }
-                    newls.push(o);
-                });
-                obj["items"]=newls;
+                    })
+                console.log(newlist);
+                // let newls = [];
+                obj["items"]=newlist;
                 console.log(obj);
           } else {
               console.log("Nope")
