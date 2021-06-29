@@ -1,3 +1,1 @@
-up next:
-Get the reading of the vault votes to work with users.  List of users who voted keep, list who voted junk.  
-If current user is in one of those lists set that vote value.
+Set up "create vault"
